@@ -12,6 +12,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/v1/flights")
@@ -116,6 +117,19 @@ public class FlightsController {
         } catch (Exception e) {
             // Return a not found response if flight does not exist
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @GetMapping("/destinations")
+    public ResponseEntity<List<String>> getAllUniqueDestinations() {
+        try {
+            List<String> uniqueDestinations = flightsService.getAllFlights().stream()
+                    .map(Flights::getDestination)
+                    .distinct()
+                    .collect(Collectors.toList());
+            return new ResponseEntity<>(uniqueDestinations, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
